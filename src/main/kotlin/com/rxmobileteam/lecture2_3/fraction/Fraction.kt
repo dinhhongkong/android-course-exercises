@@ -1,65 +1,76 @@
 package com.rxmobileteam.lecture2_3.fraction
 
+import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
+
 class Fraction private constructor(
   val numerator: Int,
   val denominator: Int,
 ) : Comparable<Fraction> {
   // TODO: Implement the decimal value of the fraction
-  val decimal: Double = TODO()
+  val decimal: Double = numerator.toDouble()/denominator.toDouble()
 
   init {
     // TODO: Check validity of numerator and denominator (throw an exception if invalid)
+    if (denominator == 0) throw Exception("Denominator cannot be zero.")
   }
 
   //region unary operators
   // TODO: "+fraction" operator
-  operator fun unaryPlus(): Fraction = TODO()
+  operator fun unaryPlus(): Fraction = this
 
   // TODO: "-fraction" operator
-  operator fun unaryMinus(): Fraction = TODO()
+  operator fun unaryMinus(): Fraction = Fraction(-numerator,denominator)
   //endregion
 
   //region plus operators
   // TODO: "fraction+fraction" operator
-  operator fun plus(other: Fraction): Fraction = TODO()
+  operator fun plus(other: Fraction): Fraction =
+    if(denominator == other.denominator) {
+       Fraction(numerator+other.numerator,denominator)
+    } else {
+      Fraction(numerator * other.denominator + other.numerator * denominator,
+        denominator * other.denominator)
+    }
 
   // TODO: "fraction+number" operator
-  operator fun plus(other: Int): Fraction = TODO()
+  operator fun plus(other: Int): Fraction = this + Fraction(other,1);
   //endregion
 
   //region times operators
   // TODO: "fraction*fraction" operator
-  operator fun times(other: Fraction): Fraction = TODO()
+  operator fun times(other: Fraction): Fraction = Fraction(numerator * other.numerator, denominator * other.denominator)
 
   // TODO: "fraction*number" operator
-  operator fun times(number: Int): Fraction = TODO()
+  operator fun times(number: Int): Fraction = Fraction(numerator * number, denominator)
   //endregion
 
   // TODO: Compare two fractions
-  override fun compareTo(other: Fraction): Int = TODO()
+  override fun compareTo(other: Fraction): Int = decimal.compareTo(other.decimal)
 
   //region toString, hashCode, equals, copy
   // TODO: Format the fraction as a string (e.g. "1/2")
-  override fun toString(): String = TODO()
+  override fun toString(): String = "$numerator/$denominator "
 
   // TODO: Implement hashCode
-  override fun hashCode(): Int = TODO()
+  override fun hashCode(): Int = 31 * numerator + denominator
 
   // TODO: Implement equals
-  override fun equals(other: Any?): Boolean = TODO()
+  override fun equals(other: Any?): Boolean = other is Fraction && numerator * other.denominator == other.numerator * denominator
 
   // TODO: Implement copy
   fun copy(
     numerator: Int = this.numerator,
     denominator: Int = this.denominator
-  ): Fraction = TODO()
+  ): Fraction = Fraction(numerator, denominator)
   //endregion
 
   companion object {
     @JvmStatic
     fun ofInt(number: Int): Fraction {
       // TODO: Returns a fraction from an integer number
-      return Fraction(0, 0) // Change this
+      return Fraction(number, 1) // Change this
     }
 
     @JvmStatic
@@ -67,8 +78,12 @@ class Fraction private constructor(
       // TODO: Check validity of numerator and denominator
       // TODO: Simplify fraction using the greatest common divisor
       // TODO: Finally, return the fraction with the correct values
-      return Fraction(0, 0) // Change this
+      if (denominator == 0) throw Exception("Denominator cannot be zero.")
+      val gcd = gcd(abs(numerator), abs(denominator))
+      return Fraction(numerator / gcd, denominator / gcd)
     }
+    private fun gcd(a: Int, b: Int): Int =
+      if (b == 0) a else gcd(b, a % b)
   }
 }
 
@@ -77,30 +92,35 @@ infix fun Int.over(denominator: Int): Fraction = Fraction.of(this, denominator)
 
 //region get extensions
 // TODO: get the numerator, eg. "val (numerator) = Fraction.of(1, 2)"
-operator fun Fraction.component1(): Int = TODO()
+operator fun Fraction.component1(): Int = numerator
 
 // TODO: get the denominator, eg. "val (_, denominator) = Fraction.of(1, 2)"
-operator fun Fraction.component2(): Int = TODO()
+operator fun Fraction.component2(): Int = denominator
 
 // TODO: get the decimal, index must be 0 or 1
 // TODO: eg. "val numerator = Fraction.of(1, 2)[0]"
 // TODO: eg. "val denominator = Fraction.of(1, 2)[1]"
 // TODO: eg. "val denominator = Fraction.of(1, 2)[2]" should throw an exception
-operator fun Fraction.get(index: Int): Int = TODO()
+operator fun Fraction.get(index: Int): Int =
+  when (index) {
+      0 -> numerator
+      1 -> denominator
+      else -> throw Exception("Invalid index for Fraction")
+  }
 //endregion
 
 //region to number extensions
 // TODO: round to the nearest integer
-fun Fraction.roundToInt(): Int = TODO()
+fun Fraction.roundToInt(): Int = decimal.roundToInt()
 
 // TODO: round to the nearest long
-fun Fraction.roundToLong(): Long = TODO()
+fun Fraction.roundToLong(): Long = decimal.roundToLong()
 
 // TODO: return the decimal value as a float
-fun Fraction.toFloat(): Float = TODO()
+fun Fraction.toFloat(): Float = decimal.toFloat()
 
 // TODO: return the decimal value as a double
-fun Fraction.toDouble(): Double = TODO()
+fun Fraction.toDouble(): Double = decimal
 //endregion
 
 fun main() {

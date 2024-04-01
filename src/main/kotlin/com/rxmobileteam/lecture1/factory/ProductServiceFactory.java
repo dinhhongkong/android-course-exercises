@@ -15,8 +15,11 @@ public class ProductServiceFactory {
      *
      * @return ProductService
      */
+    private static ProductService productService;
     public ProductService createProductService() {
-        // TODO: implement this method
-        throw new ExerciseNotCompletedException();
+        if (productService == null) {
+            productService = new ProductService();
+        }
+        return productService;
     }
 }
